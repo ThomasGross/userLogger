@@ -27,7 +27,6 @@
 			// Check if user is disabled
 			if ($row["active"] === "0") {
 
-
 				$dteStart = new DateTime($row["disabledWhen"]); 
 				$dteEnd   = new DateTime();
 
