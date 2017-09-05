@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+<body>
+	<form id="login-form">
+		<input class="username" name="username" placeholder="username"></input>
+		<input type="password" class="password" name="password" placeholder="password"></input>
+		<button class="button-login">login</button>
+	</form>
+</body>
+
+<script type="text/javascript">
+	
+	$('.button-login').on('click', (e) => {
+		e.preventDefault();
+		$.ajax({
+			type: 'POST',
+			url: "login.php",
+			data: $('#login-form').serialize(),
+		}).done( (data) => {
+			alert(data);
+		});
+	});
+
+</script>
+
+</html>
