@@ -1,7 +1,18 @@
 <?php
 
-	$username = $_POST["username"];
-	$password = $_POST["password"];
+	if(isset($_POST["username"])){	
+		$username = $_POST["username"];
+	}
+
+	if(isset($_POST["password"])){
+		$password = $_POST["password"];
+	}
+
+	if(!$password || !$username)
+	{
+		exit;
+	}
+
 
 	// Create connection
 	$servername = "localhost";
@@ -27,21 +38,21 @@
 			// Check if user is disabled
 			if ($row["active"] === "0") {
 
-				$dteStart = new DateTime($row["disabledWhen"]); 
-				$dteEnd   = new DateTime();
+				$dateStart = new DateTime($row["disabledWhen"]); 
+				$dateEnd   = new DateTime();
 
-				$dteDiff = $dteStart->diff($dteEnd);
+				$dateDiff = $dateStart->diff($dateEnd);
 
-				if ($dteStart->modify('+5 minutes') < $dteEnd) {
+				if ($dateStart->modify('+5 minutes') < $dateEnd) {
 					echo "enabled";
 					$sql = 'CALL activateUser("'.$row["idUsers"].'")';
 					$result = $conn->query($sql);
 				}
 
-				echo $dteStart->format("h:i:s");
-				echo $dteEnd->format("h:i:s");
+				echo $dateStart->format("h:i:s");
+				echo $dateEnd->format("h:i:s");
 				echo "User is disabled";
-				echo $dteDiff->format("%H:%I:%S");
+				echo $dateDiff->format("%H:%I:%S");
 				exit;
 			} 
 
@@ -60,10 +71,5 @@
 
 	$conn->close();
 
-	// // function validates the password 
-	// function fnValidatePassword( $sPassword ) {
-	// 	// regular expression for validating password (letters, numbers, special character)
-	// 	return filter_var( preg_match('/^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$/', $sPassword));
-	// }
 
 ?>
