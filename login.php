@@ -1,30 +1,34 @@
 <?php
 
-	if(isset($_POST["username"])){	
+	if(isset($_POST["username"])) {	
 		$username = $_POST["username"];
 	}
 
-	if(isset($_POST["password"])){
+	if(isset($_POST["password"])) {
 		$password = $_POST["password"];
 	}
+
+	echo(isValidEmail($_POST["username"]));
+	echo(isValidPassword($_POST["password"]));
+
+	echo(sanEmail($_POST["username"]));
 
 	if(!$password || !$username)
 	{
 		exit;
 	}
 
-
 	// Create connection
 	$servername = "localhost";
 	$dbUsername = "root";
 	$dbPassword = "root";
 	$dbName = "mydb";
+	$pepper = "";
 
 	$conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
 
 	$sql = 'SELECT * FROM Users WHERE Users.`username` = "'.$username.'"';
 	$result = $conn->query($sql);
-
 
 	// LOG USER
 	$sql = 'CALL logUser("'.$username.'","'.$password.'")';
@@ -56,10 +60,20 @@
 				exit;
 			} 
 
+			$passwordFromDatabase = password_hash($row["password"].$pepper , PASSWORD_DEFAULT);
+			echo $passwordFromDatabase;
+
 			// LOG PASSWORD FAILED LOGIN
-			if ($row["password"] !== $password) {
+			if (!password_verify($password.$pepper, $passwordFromDatabase)) {
 				echo "wrong password";
 			}
+
+
+			// old code			
+			// if ($row["password"] !== $password) {
+
+			// 	echo "wrong password";
+			// }
 		}
 	} else {
 		
@@ -70,6 +84,21 @@
 	}
 
 	$conn->close();
+
+
+	function isValidPassword($password) {
+		$regex = "/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[$@$!%*?&#])[A-Za-z\d$@$!%*?&#]{8,}/";
+		return preg_match($regex, $password);
+	}
+
+	function isValidEmail($email) {
+		return filter_var($email, FILTER_VALIDATE_EMAIL) 
+        && preg_match('/@.+\./', $email);
+	}
+
+	function sanEmail($email) {
+		return filter_var($email, FILTER_SANITIZE_EMAIL);
+	}
 
 
 ?>
